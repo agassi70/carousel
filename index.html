@@ -1,14 +1,14 @@
 ﻿<!DOCTYPE html>
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title></title>
   <style>
     my-carousel {
-      width: 800px;
-      height: 550px;
-      margin: 0 auto;
+      width: 600px;
+      height: 450px;
+      margin: 20px auto;
     }
 
     .message {
@@ -18,6 +18,9 @@
       color: blue;
     }
   </style>
+  <script
+    src="//cdnjs.cloudflare.com/ajax/libs/document-register-element/1.1.1/document-register-element.js"
+  >/* W3C Custom Elements */</script>
 </head>
 <body>
   <my-carousel timeout="3" duration="400">
@@ -33,12 +36,11 @@
   </my-carousel>
 <div class="message"></div>
 </body>
-<script src="slide-element.js"></script>
+<script src="carousel-element.js"></script>
 <script>
   const message = document.querySelector('.message');
   document.addEventListener('started', function(e) {message.innerHTML = `Событие started. Было вызвано на слайде ${e.detail}.`});
   document.addEventListener('stopped', function(e) {message.innerHTML = `Событие stopped. Было вызвано на слайде ${e.detail}.`});
   document.addEventListener('slidechange', function(e) {message.innerHTML = `Текущий слайд: <span>${e.detail}</span>`});
-  document.querySelector('my-carousel').next();
 </script>
 </html>
