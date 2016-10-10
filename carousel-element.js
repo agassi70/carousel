@@ -75,6 +75,18 @@ class SliderElement extends HTMLElement {
           left: 6px;
         }
 
+        .crumbs {
+          display: flex;
+          justify-content: space-around;
+        }
+
+        .crumbs>p {
+          width: 5px;
+          height: 5px;
+          background-color: lightgray;
+          border-radius: 50%;
+        }
+
         button {
           width: 35px;
           height: 35px;
@@ -168,6 +180,7 @@ class SliderElement extends HTMLElement {
   connectedCallback() {
     this.counter = 1;
     this.offset = 0;
+    this.crumbs = [];
     this.btnFront = this.shadowRoot.querySelector('.btn.front');
     this.btnRear = this.shadowRoot.querySelector('.btn.rear');
     this.btnPlay = this.shadowRoot.querySelector('[name="play"]');
@@ -180,13 +193,13 @@ class SliderElement extends HTMLElement {
 
     const images = this.shadowRoot.querySelector('slot').assignedNodes();
     this.numberOfImages = images.length;
-    const cloneStart = images[0].cloneNode();
-    this.shadowRoot.querySelector('.slides').appendChild(cloneStart);
-
-    for (const image of images) {
+    images.forEach((image, idx) => {
       image.style.minWidth = `${this.widthContent}px`;
       image.style.height = `${this.heightContent}px`;
-    }
+    });
+
+    const cloneStart = images[0].cloneNode();
+    this.shadowRoot.querySelector('.slides').appendChild(cloneStart);
 
     this.btnFront.addEventListener('click', () => this.next());
 

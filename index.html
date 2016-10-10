@@ -36,11 +36,11 @@
   </my-carousel>
 <div class="message"></div>
 </body>
-<script src="carousel-element.js"></script>
+<script src="result.js"></script>
 <script>
   const message = document.querySelector('.message');
-  document.addEventListener('started', function(e) {message.innerHTML = `Событие started. Было вызвано на слайде ${e.detail}.`});
-  document.addEventListener('stopped', function(e) {message.innerHTML = `Событие stopped. Было вызвано на слайде ${e.detail}.`});
-  document.addEventListener('slidechange', function(e) {message.innerHTML = `Текущий слайд: <span>${e.detail}</span>`});
+  document.addEventListener('started', function(e) {message.innerHTML = `Event 'started' on slide ${e.detail}.`});
+  document.addEventListener('stopped', function(e) {message.innerHTML = `Event 'stopped' on slide ${e.detail}.`});
+  document.addEventListener('slidechange', function(e) {message.innerHTML = `Current slide: <span>${e.detail}</span>`});
 </script>
 </html>
