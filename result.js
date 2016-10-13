@@ -8190,12 +8190,22 @@
 	  }
 	
 	  _createClass(SliderElement, [{
+	    key: 'attributeChangedCallback',
+	    value: function attributeChangedCallback(name, oldValue, newValue) {
+	      if (name === 'panel' && newValue === 'false') this.footer.style.display = 'none';
+	      if (name === 'panel' && newValue === 'true') this.footer.style.display = 'flex';
+	      if (name === 'crumbs' && newValue === 'false') this.divCrumbs.style.visibility = 'hidden';
+	      if (name === 'crumbs' && newValue === 'true') this.divCrumbs.style.visibility = 'visible';
+	    }
+	  }, {
 	    key: 'createdCallback',
 	    value: function createdCallback() {
 	      this.attachShadow({ mode: 'open' });
-	      var style = '<style>\n        :host {\n          display: block;\n          background-color: #aaaaaa;\n        }\n\n        section {\n          display: flex;\n          justify-content: center;\n          align-items: center;\n        }\n\n        #main {\n          height: 90%;\n        }\n\n        .content {\n          box-sizing: border-box;\n          border: 3px solid gray;\n          width: 85%;\n          height: 90%;\n          overflow: hidden;\n          margin: 0 20px;\n        }\n\n        .slides {\n          display: flex;\n        }\n\n        .btn {\n            position: relative;\n            width: 35px;\n            height: 35px;\n            background-color: gray;\n            border-radius: 50%;\n        }\n\n        .btn:hover, button:hover {\n          cursor: pointer;\n        }\n\n        .btn::before {\n          content: "";\n          position: absolute;\n          width: 15px;\n          height: 15px;\n          border-top: 2px solid white;\n          border-right: 2px solid white;\n        }\n\n        .rear::before {\n          transform: rotate(-135deg);\n          top: 9px;\n          left: 12px;\n        }\n\n        .front::before {\n          transform: rotate(45deg);\n          top: 9px;\n          left: 6px;\n        }\n\n        button {\n          width: 35px;\n          height: 35px;\n          border: 1px solid black;\n          border-radius: 50%;\n          margin: 0 20px;\n          background: url(\'mediaicons.jpg\') -44px -43px no-repeat;\n          background-size: 300px 300px;\n        }\n\n        button[name="pause"] {\n          background-position: -104px -43px;\n        }\n    </style>';
-	      var html = '\n      <section id="main">\n      <div class="btn rear"></div>\n      <div class="content">\n        <div class="slides">\n          <slot name="slide"></slot>\n        </div>\n      </div>\n      <div class="btn front"></div>\n      </section>\n      <section>\n      <button name="play"></button>\n      <button name="pause"></button>\n      </section>\n      ';
+	      var style = '<style>\n        :host {\n          display: block;\n          background-color: #aaaaaa;\n        }\n\n        section {\n          display: flex;\n          justify-content: center;\n          align-items: center;\n        }\n\n        #main {\n          height: 88%;\n        }\n\n        .content {\n          box-sizing: border-box;\n          border: 3px solid gray;\n          width: 85%;\n          height: 90%;\n          overflow: hidden;\n          margin: 0 20px;\n        }\n\n        .slides {\n          display: flex;\n        }\n\n        .btn {\n            position: relative;\n            width: 35px;\n            height: 35px;\n            background-color: gray;\n            border-radius: 50%;\n        }\n\n        .btn:hover, button:hover, .crumbs>p:hover {\n          cursor: pointer;\n        }\n\n        .btn::before {\n          content: "";\n          position: absolute;\n          width: 15px;\n          height: 15px;\n          border-top: 2px solid white;\n          border-right: 2px solid white;\n        }\n\n        .rear::before {\n          transform: rotate(-135deg);\n          top: 9px;\n          left: 12px;\n        }\n\n        .front::before {\n          transform: rotate(45deg);\n          top: 9px;\n          left: 6px;\n        }\n\n        .crumbs {\n          margin: 0 auto 10px;\n          width: 50%;\n          height: 10px;\n          display: flex;\n          justify-content: space-around;\n          align-items: center;\n        }\n\n        .crumbs>p {\n          width: 7px;\n          height: 7px;\n          border-radius: 50%;\n        }\n\n        button {\n          width: 35px;\n          height: 35px;\n          border: 1px solid black;\n          border-radius: 50%;\n          margin: 0 20px;\n          background: url(\'mediaicons.jpg\') -44px -43px no-repeat;\n          background-size: 300px 300px;\n        }\n\n        button[name="pause"] {\n          background-position: -104px -43px;\n        }\n    </style>';
+	      var html = '\n      <section id="main">\n      <div class="btn rear"></div>\n      <div class="content">\n        <div class="slides">\n          <slot name="slide"></slot>\n        </div>\n      </div>\n      <div class="btn front"></div>\n      </section>\n      <div class="crumbs"></div>\n      <section id="footer">\n      <button name="play"></button>\n      <button name="pause"></button>\n      </section>\n      ';
 	      this.shadowRoot.innerHTML = style + html;
+	      this.footer = this.shadowRoot.querySelector('#footer');
+	      this.divCrumbs = this.shadowRoot.querySelector('.crumbs');
 	    }
 	  }, {
 	    key: 'next',
@@ -8209,12 +8219,10 @@
 	        this.counter = 1;
 	        this.offset = 0;
 	        this.slides.animate([{ transform: 'translate(' + start + 'px)' }, { transform: 'translate(' + end + 'px)', offset: 1 }, { transform: 'translate(0px)' }], { duration: this.duration, fill: 'forwards' });
-	        this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
 	        return;
 	      }
 	
 	      this.slides.animate([{ transform: 'translate(' + start + 'px)' }, { transform: 'translate(' + end + 'px)' }], { duration: this.duration, fill: 'forwards' });
-	      this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
 	    }
 	  }, {
 	    key: 'prev',
@@ -8228,12 +8236,10 @@
 	        this.counter = this.numberOfImages;
 	        this.offset = -this.widthContent * (this.numberOfImages - 1);
 	        this.slides.animate([{ transform: 'translate(' + start + 'px)' }, { transform: 'translate(' + (this.offset - this.widthContent) + 'px)', offset: 0 }, { transform: 'translate(' + this.offset + 'px)', offset: 1 }], { duration: this.duration, fill: 'forwards' });
-	        this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
 	        return;
 	      }
 	
 	      this.slides.animate([{ transform: 'translate(' + start + 'px)' }, { transform: 'translate(' + end + 'px)' }], { duration: this.duration, fill: 'forwards' });
-	      this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
 	    }
 	  }, {
 	    key: 'play',
@@ -8260,6 +8266,7 @@
 	
 	      this.counter = 1;
 	      this.offset = 0;
+	      this.crumbs = [];
 	      this.btnFront = this.shadowRoot.querySelector('.btn.front');
 	      this.btnRear = this.shadowRoot.querySelector('.btn.rear');
 	      this.btnPlay = this.shadowRoot.querySelector('[name="play"]');
@@ -8276,34 +8283,23 @@
 	
 	      var images = this.shadowRoot.querySelector('slot').assignedNodes();
 	      this.numberOfImages = images.length;
+	
+	      images.forEach(function (image, idx) {
+	        image.style.minWidth = _this3.widthContent + 'px';
+	        image.style.height = _this3.heightContent + 'px';
+	        var p = document.createElement('p');
+	        p.style.backgroundColor = idx === 0 ? 'black' : 'white';
+	        p.addEventListener('click', function () {
+	          _this3.counter = _this3.crumbs.indexOf(p);
+	          _this3.offset = -(_this3.counter - 1) * _this3.widthContent;
+	          _this3.next();
+	        });
+	        _this3.divCrumbs.appendChild(p);
+	        _this3.crumbs[idx] = p;
+	      });
+	
 	      var cloneStart = images[0].cloneNode();
 	      this.shadowRoot.querySelector('.slides').appendChild(cloneStart);
-	
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-	
-	      try {
-	        for (var _iterator = images[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var image = _step.value;
-	
-	          image.style.minWidth = this.widthContent + 'px';
-	          image.style.height = this.heightContent + 'px';
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
 	
 	      this.btnFront.addEventListener('click', function () {
 	        return _this3.next();
@@ -8320,6 +8316,12 @@
 	      this.btnPause.addEventListener('click', function () {
 	        return _this3.pause();
 	      });
+	
+	      this.addEventListener('slidechange', function (e) {
+	        _this3.crumbs.forEach(function (crumb, idx) {
+	          crumb.style.backgroundColor = idx === e.detail - 1 ? 'black' : 'white';
+	        });
+	      });
 	    }
 	  }, {
 	    key: 'delay',
@@ -8330,6 +8332,20 @@
 	    key: 'duration',
 	    get: function get() {
 	      return +this.getAttribute('duration') || 500;
+	    }
+	  }, {
+	    key: 'counter',
+	    set: function set(value) {
+	      this.count = value;
+	      this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.count }));
+	    },
+	    get: function get() {
+	      return this.count;
+	    }
+	  }], [{
+	    key: 'observedAttributes',
+	    get: function get() {
+	      return ['panel', 'crumbs'];
 	    }
 	  }]);
 	

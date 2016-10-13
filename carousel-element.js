@@ -3,12 +3,32 @@ class SliderElement extends HTMLElement {
     super();
   }
 
+  static get observedAttributes() {
+    return ['panel', 'crumbs'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'panel' && newValue === 'false') this.footer.style.display = 'none';
+    if (name === 'panel' && newValue === 'true') this.footer.style.display = 'flex';
+    if (name === 'crumbs' && newValue === 'false') this.divCrumbs.style.visibility = 'hidden';
+    if (name === 'crumbs' && newValue === 'true') this.divCrumbs.style.visibility = 'visible';
+  }
+
   get delay() {
     return this.getAttribute('timeout') * 1000 || 5000;
   }
 
   get duration() {
     return +this.getAttribute('duration') || 500;
+  }
+
+  set counter(value) {
+    this.count = value;
+    this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.count }));
+  }
+
+  get counter() {
+    return this.count;
   }
 
   createdCallback() {
@@ -26,7 +46,7 @@ class SliderElement extends HTMLElement {
         }
 
         #main {
-          height: 90%;
+          height: 88%;
         }
 
         .content {
@@ -50,7 +70,7 @@ class SliderElement extends HTMLElement {
             border-radius: 50%;
         }
 
-        .btn:hover, button:hover {
+        .btn:hover, button:hover, .crumbs>p:hover {
           cursor: pointer;
         }
 
@@ -76,14 +96,17 @@ class SliderElement extends HTMLElement {
         }
 
         .crumbs {
+          margin: 0 auto 10px;
+          width: 50%;
+          height: 10px;
           display: flex;
           justify-content: space-around;
+          align-items: center;
         }
 
         .crumbs>p {
-          width: 5px;
-          height: 5px;
-          background-color: lightgray;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
         }
 
@@ -111,12 +134,15 @@ class SliderElement extends HTMLElement {
       </div>
       <div class="btn front"></div>
       </section>
-      <section>
+      <div class="crumbs"></div>
+      <section id="footer">
       <button name="play"></button>
       <button name="pause"></button>
       </section>
       `;
     this.shadowRoot.innerHTML = style + html;
+    this.footer = this.shadowRoot.querySelector('#footer');
+    this.divCrumbs = this.shadowRoot.querySelector('.crumbs');
   }
 
   next() {
@@ -132,14 +158,12 @@ class SliderElement extends HTMLElement {
           { transform: `translate(${end}px)`, offset: 1 },
           { transform: 'translate(0px)' }],
         { duration: this.duration, fill: 'forwards' });
-      this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
       return;
     }
 
     this.slides.animate([{ transform: `translate(${start}px)` },
         { transform: `translate(${end}px)` }],
       { duration: this.duration, fill: 'forwards' });
-    this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
   }
 
   prev() {
@@ -155,14 +179,12 @@ class SliderElement extends HTMLElement {
           { transform: `translate(${this.offset - this.widthContent}px)`, offset: 0 },
           { transform: `translate(${this.offset}px)`, offset: 1 }],
         { duration: this.duration, fill: 'forwards' });
-      this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
       return;
     }
 
     this.slides.animate([{ transform: `translate(${start}px)` },
         { transform: `translate(${end}px)` }],
       { duration: this.duration, fill: 'forwards' });
-    this.dispatchEvent(new CustomEvent('slidechange', { bubbles: true, composed: true, detail: this.counter }));
   }
 
   play() {
@@ -193,9 +215,19 @@ class SliderElement extends HTMLElement {
 
     const images = this.shadowRoot.querySelector('slot').assignedNodes();
     this.numberOfImages = images.length;
+
     images.forEach((image, idx) => {
       image.style.minWidth = `${this.widthContent}px`;
       image.style.height = `${this.heightContent}px`;
+      const p = document.createElement('p');
+      p.style.backgroundColor = idx === 0 ? 'black' : 'white';
+      p.addEventListener('click', () => {
+        this.counter = this.crumbs.indexOf(p);
+        this.offset = -(this.counter - 1) * this.widthContent;
+        this.next();
+      });
+      this.divCrumbs.appendChild(p);
+      this.crumbs[idx] = p;
     });
 
     const cloneStart = images[0].cloneNode();
@@ -208,6 +240,12 @@ class SliderElement extends HTMLElement {
     this.btnPlay.addEventListener('click', () => this.play());
 
     this.btnPause.addEventListener('click', () => this.pause());
+
+    this.addEventListener('slidechange', e => {
+      this.crumbs.forEach((crumb, idx) => {
+        crumb.style.backgroundColor = idx === e.detail - 1 ? 'black' : 'white';
+      });
+    });
   }
 }
 

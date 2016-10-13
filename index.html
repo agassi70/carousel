@@ -23,7 +23,7 @@
   >/* W3C Custom Elements */</script>
 </head>
 <body>
-  <my-carousel timeout="3" duration="400">
+  <my-carousel timeout="3" duration="400" panel="false" crumbs="false">
     <img src="https://cdn1.recombu.com/media/cars/news4/bugatti-chiron-1_w720.jpg" slot="slide"/>
     <img src="http://ur-spot.com/wp-content/uploads/2016/08/best-looking-sports-cars-ikkiqtbg.jpg"
          slot="slide"/>
@@ -42,5 +42,7 @@
   document.addEventListener('started', function(e) {message.innerHTML = `Event 'started' on slide ${e.detail}.`});
   document.addEventListener('stopped', function(e) {message.innerHTML = `Event 'stopped' on slide ${e.detail}.`});
   document.addEventListener('slidechange', function(e) {message.innerHTML = `Current slide: <span>${e.detail}</span>`});
+  setTimeout(function() {document.querySelector('my-carousel').setAttribute('panel', true)}, 3000);
+  setTimeout(function() {document.querySelector('my-carousel').setAttribute('crumbs', true)}, 6000);
 </script>
 </html>
